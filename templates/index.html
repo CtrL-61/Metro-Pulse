@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="{{ current_lang if current_lang else 'tr' }}" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metro Pulse</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root { 
+            --bg: #f8fafc; --card: #ffffff; --accent: #38bdf8; --text: #0f172a; 
+            --inactive-line: #cbd5e1; --border: #e2e8f0;
+        }
+        [data-theme="dark"] { 
+            --bg: #0f172a; --card: #1e293b; --text: #f8fafc; 
+            --inactive-line: #334155; --border: #334155;
+        }
+        
+        body { background-color: var(--bg); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; transition: 0.3s; overflow-x: hidden; }
+        
+        .main-title { 
+            font-size: clamp(2.5rem, 10vw, 4.5rem); 
+            font-weight: 800; letter-spacing: -3px; 
+            text-align: center; margin: 40px 0 10px 0; 
+        }
+
+        .alert-glass {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 12px 20px;
+            margin-bottom: 30px;
+            color: #f59e0b;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideUp 0.5s ease;
+        }
+        [data-theme="light"] .alert-glass { color: #b45309; background: rgba(245, 158, 11, 0.05); }
+
+        .dashboard-nav {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 40px;
+            padding: 0 10px;
+        }
+
+        .nav-item {
+            flex: 1;
+            cursor: pointer;
+            text-align: center;
+            opacity: 0.7;
+            transition: 0.3s;
+        }
+
+        .nav-line {
+            height: 6px;
+            width: 100%;
+            background-color: var(--inactive-line);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .nav-label {
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--inactive-line);
+            transition: 0.3s;
+        }
+
+        .nav-item.active { opacity: 1; }
+        .nav-item.active .nav-line {
+            background-color: var(--accent);
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.6);
+            transform: scaleX(1.1);
+        }
+        .nav-item.active .nav-label { color: var(--text); }
+
+        .page-content { display: none; animation: slideUp 0.5s ease; }
+        .page-content.active { display: block; }
+        
+        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        .glass-card { background: var(--card); border: 1px solid var(--border); border-radius: 28px; padding: 35px; box-shadow: 0 25px 50px rgba(0,0,0,0.3); }
+        [data-theme="light"] .glass-card { box-shadow: 0 25px 50px rgba(0,0,0,0.05); }
+
+        .custom-input { background-color: var(--bg) !important; color: var(--text) !important; border: 2px solid var(--border); padding: 15px; border-radius: 16px; width: 100%; margin-bottom: 0; transition: 0.2s; }
+        .custom-input:focus { border-color: var(--accent); outline: none; }
+        
+        /* --- YENİ MODERN SWAP BUTONU TASARIMI --- */
+        .swap-wrapper {
+            position: relative;
+            height: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .swap-btn-modern {
+            background: var(--card);
+            border: 2px solid var(--border);
+            color: var(--accent);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            margin: -22px 0;
+            padding: 0;
+            outline: none;
+        }
+
+        .swap-btn-modern:hover {
+            border-color: var(--accent);
+            transform: rotate(180deg) scale(1.1);
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+        }
+
+        .swap-btn-modern:active {
+            transform: scale(0.9) rotate(180deg);
+        }
+
+        /* Input mesafelerini buton için ayarlayalım */
+        #fromInput { margin-bottom: 4px; }
+        #toInput { margin-top: 4px; }
+        /* --------------------------------------- */
+
+        .btn-pulse { background: linear-gradient(135deg, var(--accent), #0284c7); border: none; padding: 18px; font-weight: 800; border-radius: 16px; width: 100%; color: white; transition: 0.3s; }
+        
+        .top-nav { position: absolute; top: 20px; right: 20px; display: flex; gap: 10px; }
+        .nav-btn { background: var(--card); border: 1px solid var(--border); color: var(--text); padding: 8px 15px; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 0.8rem; }
+
+        /* --- ŞEHİR SEÇİM KARTLARI --- */
+        .city-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+        .city-option {
+            display: block;
+            text-decoration: none;
+            background: var(--bg);
+            border: 2px solid var(--border);
+            border-radius: 18px;
+            padding: 18px 10px;
+            text-align: center;
+            color: var(--text);
+            font-weight: 800;
+            transition: 0.25s;
+        }
+        .city-option:hover { border-color: var(--accent); color: var(--text); transform: translateY(-2px); }
+        .city-option.selected {
+            border-color: var(--accent);
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--accent);
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.25);
+        }
+        .city-option .flag { font-size: 1.6rem; display: block; margin-bottom: 6px; }
+    </style>
+</head>
+<body>
+    <div class="top-nav">
+        <a href="/?lang={% if current_lang == 'tr' %}en{% else %}tr{% endif %}&city={{ current_city if current_city else 'istanbul' }}" class="nav-btn">🌐 {% if current_lang == 'tr' %}EN{% else %}TR{% endif %}</a>
+        <button onclick="toggleTheme()" class="nav-btn">🌙</button>
+    </div>
+
+    <div class="container" style="max-width: 480px;">
+        <h1 class="main-title">Metro <span style="color: var(--accent)">Pulse</span></h1>
+
+        {% if announcement %}
+        <div class="alert-glass">
+            <span style="font-size: 1.2rem;">⚠️</span>
+            <span style="font-size: 0.8rem; font-weight: 600;">{{ announcement }}</span>
+        </div>
+        {% endif %}
+
+        <div class="dashboard-nav">
+            <div class="nav-item" id="btn-city" onclick="openTab('city')">
+                <div class="nav-line"></div>
+                <div class="nav-label">{% if current_lang == 'tr' %}ŞEHİR{% else %}CITY{% endif %}</div>
+            </div>
+            
+            <div class="nav-item active" id="btn-route" onclick="openTab('route')">
+                <div class="nav-line"></div>
+                <div class="nav-label">{% if current_lang == 'tr' %}ROTA{% else %}ROUTE{% endif %}</div>
+            </div>
+            
+            <div class="nav-item" id="btn-info" onclick="openTab('info')">
+                <div class="nav-line"></div>
+                <div class="nav-label">{% if current_lang == 'tr' %}BİLGİ{% else %}INFO{% endif %}</div>
+            </div>
+        </div>
+
+        <div id="tab-city" class="page-content text-center">
+            <div class="glass-card">
+                <h4 class="fw-800 mb-3">{% if current_lang == 'tr' %}Şehir Değiştir{% else %}Change City{% endif %}</h4>
+                <p class="text-secondary small mb-0">{% if current_lang == 'tr' %}Rota aramak istediğin şehri seç.{% else %}Choose the city you want to search a route in.{% endif %}</p>
+
+                <div class="city-grid">
+                    {% for key, name in cities.items() %}
+                    <a href="/?lang={{ current_lang }}&city={{ key }}"
+                       class="city-option {% if current_city == key %}selected{% endif %}">
+                        <span class="flag">{% if key == 'istanbul' %}🇹🇷{% else %}🏛️{% endif %}</span>
+                        {{ name }}
+                    </a>
+                    {% endfor %}
+                </div>
+
+                <p class="text-secondary small mt-4 mb-0" style="opacity:0.7;">
+                    {% if current_lang == 'tr' %}Daha fazla şehir yakında eklenecek.{% else %}More cities coming soon.{% endif %}
+                </p>
+            </div>
+        </div>
+
+        <div id="tab-route" class="page-content active">
+            <div class="glass-card">
+                <div class="text-center mb-3">
+                    <span class="badge-metro" style="background: rgba(56, 189, 248, 0.1); color: var(--accent); padding: 6px 14px; border-radius: 10px; font-size: 0.75rem; font-weight: 800;">
+                        📍 {{ cities.get(current_city, current_city) if cities else current_city }}
+                    </span>
+                </div>
+                <form action="/arama" method="POST" id="routeForm">
+                    <input type="hidden" id="langInput" name="lang" value="{{ current_lang if current_lang else 'tr' }}">
+                    <input type="hidden" id="cityInput" name="city" value="{{ current_city if current_city else 'istanbul' }}">
+                    
+                    <label class="small fw-bold text-secondary ms-2 mb-2">{% if current_lang == 'tr' %}NEREDEN?{% else %}FROM?{% endif %}</label>
+                    <input id="fromInput" list="duraklarList" name="baslangic" class="custom-input" placeholder="{% if current_lang == 'tr' %}Kalkış durağı...{% else %}Departure station...{% endif %}" required autocomplete="off">
+                    
+                    <div class="swap-wrapper">
+                        <button type="button" onclick="swapInputs()" class="swap-btn-modern">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="m3 16 4 4 4-4"/><path d="M7 20V4"/><path d="m21 8-4-4-4 4"/><path d="M17 4v16"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <label class="small fw-bold text-secondary ms-2 mb-2">{% if current_lang == 'tr' %}NEREYE?{% else %}TO?{% endif %}</label>
+                    <input id="toInput" list="duraklarList" name="hedef" class="custom-input" placeholder="{% if current_lang == 'tr' %}Varış durağı...{% else %}Destination station...{% endif %}" required autocomplete="off">
+                    
+                    <datalist id="duraklarList">
+                        {% for durak in duraklar %}<option value="{{ durak }}">{% endfor %}
+                    </datalist>
+                    
+                    <button type="submit" class="btn btn-pulse mt-4 shadow-sm" id="submitBtn">
+                        {% if current_lang == 'tr' %}ROTA HESAPLA{% else %}CALCULATE ROUTE{% endif %}
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div id="tab-info" class="page-content">
+            <div class="glass-card">
+                <h4 class="fw-800 mb-3 text-center">Metro Pulse</h4>
+                <div class="text-secondary small">
+                    {% if current_lang == 'tr' %}
+                        <p>Bu uygulama şehir içi metro hatlarını en hızlı şekilde birbirine bağlamak için tasarlanmış bir <strong>eğitim projesidir</strong>. Şu anda İstanbul ve Ankara verileri yüklüdür.</p>
+                        
+                        <div class="p-2 rounded-3 mb-3 text-center" style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.2);">
+                            <strong style="color: #f59e0b;">⚠️ Önemli Not:</strong><br>
+                            Varış süreleri ve doluluk oranları, yazılımın çalışma mantığını göstermek için <strong>simüle edilmiştir</strong>; gerçek zamanlı veriler değildir.
+                        </div>
+
+                        <p style="font-style: italic; border-left: 3px solid var(--accent); padding-left: 10px;">
+                            Bu proje tamamen bir <strong>Android telefon</strong> üzerinden kodlanmıştır. Tasarım ve test aşaması devam etmektedir.
+                        </p>
+                    {% else %}
+                        <p>This app is an <strong>educational project</strong> designed to connect city metro lines in the fastest way. Istanbul and Ankara data are currently loaded.</p>
+                        
+                        <div class="p-2 rounded-3 mb-3 text-center" style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.2);">
+                            <strong style="color: #f59e0b;">⚠️ Important Note:</strong><br>
+                            Arrival times and occupancy rates shown are <strong>simulated</strong> to demonstrate the software's logic; they are not real-time data.
+                        </div>
+
+                        <p style="font-style: italic; border-left: 3px solid var(--accent); padding-left: 10px;">
+                            This project was developed entirely on an <strong>Android phone</strong>. It is currently in the design and testing phase.
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openTab(tabName) {
+            document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-' + tabName).classList.add('active');
+            document.getElementById('btn-' + tabName).classList.add('active');
+        }
+
+        function swapInputs() {
+            const from = document.getElementById('fromInput');
+            const to = document.getElementById('toInput');
+            const temp = from.value;
+            from.value = to.value;
+            to.value = temp;
+            
+            // Butona basıldığında küçük bir dönme efekti için
+            const btn = document.querySelector('.swap-btn-modern');
+            btn.style.transform = 'rotate(180deg) scale(0.9)';
+            setTimeout(() => {
+                btn.style.transform = '';
+            }, 400);
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const newTheme = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+
+        document.getElementById('routeForm').onsubmit = function() {
+            const lang = document.documentElement.lang;
+            document.getElementById('langInput').value = lang;
+            
+            const btn = document.getElementById('submitBtn');
+            btn.innerHTML = `<span class="spinner-border spinner-border-sm"></span> ${lang === 'tr' ? 'YOL BULUNUYOR...' : 'FINDING ROUTE...'}`;
+        };
+    </script>
+</body>
+</html>

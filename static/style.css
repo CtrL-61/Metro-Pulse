@@ -1,0 +1,177 @@
+/* static/style.css */
+
+/* 1. Global Değişkenler ve Reset */
+:root {
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --accent: #38bdf8;
+    --text: #0f172a;
+    --input-bg: #f1f5f9;
+    --border: #e2e8f0;
+    --transition: all 0.3s ease;
+}
+
+[data-theme="dark"] {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --text: #f8fafc;
+    --input-bg: #0f172a;
+    --border: #334155;
+}
+
+body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    transition: var(--transition);
+    margin: 0;
+    overflow-x: hidden;
+}
+
+/* 2. Cam Kart (Glass Card) Efekti */
+.glass-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 2.5rem;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
+/* 3. Modern Input Stilleri */
+.custom-input {
+    background: var(--input-bg);
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    padding: 12px 20px;
+    color: var(--text);
+    width: 100%;
+    transition: var(--transition);
+    outline: none;
+}
+
+.custom-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.2);
+}
+
+/* 4. Pulse Buton Efekti */
+.btn-pulse {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 14px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    width: 100%;
+    transition: var(--transition);
+    box-shadow: 0 8px 20px rgba(56, 189, 248, 0.3);
+}
+
+.btn-pulse:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 25px rgba(56, 189, 248, 0.4);
+    color: white;
+}
+
+/* 5. Tema Değiştirici Buton */
+.theme-toggle {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    width: 45px;
+    height: 45px;
+    border-radius: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+/* 6. Timeline (Sonuç Sayfası İçin) */
+.timeline-line {
+    position: relative;
+    padding-left: 30px;
+}
+
+.timeline-line::before {
+    content: '';
+    position: absolute;
+    left: 7px;
+    top: 5px;
+    width: 2px;
+    height: 100%;
+    background: var(--border);
+}
+
+.step:last-child {
+    margin-bottom: 0;
+}
+
+.alert-glass {
+    background: rgba(245, 158, 11, 0.1); /* Turuncu/Sarı tonlu şeffaf arka plan */
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 15px 20px;
+    margin-bottom: 25px;
+    color: #f59e0b;
+}
+
+.announcement-icon {
+    font-size: 1.5rem;
+    filter: drop-shadow(0 0 5px rgba(245, 158, 11, 0.5));
+}
+
+.announcement-text {
+    font-size: 0.85rem;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+/* Light theme (aydınlık mod) için metin rengini biraz daha koyulaştıralım */
+[data-theme="light"] .announcement-text {
+    color: #b45309;
+}
+
+/* Swap Butonu Modern Konteyner ve Stil */
+.swap-wrapper {
+    position: relative;
+    height: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+
+.swap-btn-modern {
+    background: var(--card);
+    border: 2px solid var(--border);
+    color: var(--accent);
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    margin: -21px 0; /* İki inputun tam ortasına girmesini sağlar */
+    padding: 0;
+}
+
+.swap-btn-modern:hover {
+    border-color: var(--accent);
+    transform: rotate(180deg) scale(1.1);
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+}
+
+.swap-btn-modern:active {
+    transform: scale(0.9);
+}
+
+/* Inputlar arası boşluğu biraz artıralım ki buton sıkışmasın */
+#fromInput { margin-bottom: 5px; }
+#toInput { margin-top: 5px; }

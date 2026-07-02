@@ -1,0 +1,17 @@
+{
+  "name": "Metro Pulse",
+  "short_name": "MetroPulse",
+  "description": "Çok şehirli metro rota planlayıcı (İstanbul, Ankara)",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#38bdf8",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/821/821321.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
